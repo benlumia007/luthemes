@@ -1,0 +1,25 @@
+{
+  "name": "benlumia007/luthemes.com",
+  "type": "classicpress-theme",
+  "description": "Creativity is a next-generation theme designed to work with ClassicPress, offering an ideal experience for showcasing your site's content.",
+  "keywords": [ "classicpress", "theme" ],
+  "homepage": "https://luthemes.com/portfolio/creativity",
+  "license": "GPL-2.0-or-later",
+  "authors": [
+    {
+      "name": "Benjamin Lu",
+      "email": "benlumia007@gmail.com",
+      "homepage": "https://luthemes.com"
+    }
+  ],
+  "autoload": {
+    "psr-4": {
+      "Succotash\\": "app"
+    }
+  },
+  "require": {
+    "php": ">=7.0",
+    "benlumia007/backdrop": "^2.0",
+    "benlumia007/backdrop-mix-manifest": "v1.0.0.x-dev"
+  }
+}
