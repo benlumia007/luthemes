@@ -32,6 +32,7 @@ if ( file_exists( get_theme_file_path( '/vendor/autoload.php' ) ) ) {
 array_map( function( $file ) {
 	require_once get_theme_file_path( "/app/{$file}.php" );
 }, [
+	'CodePotent/UpdateClient.php',
 	'framework',
 	'functions-scripts'
 ] );
