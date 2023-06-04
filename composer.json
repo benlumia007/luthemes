@@ -19,7 +19,7 @@
   },
   "require": {
     "php": ">=7.0",
-    "benlumia007/backdrop": "^2.0",
-    "benlumia007/backdrop-mix-manifest": "v1.0.0.x-dev"
+    "benlumia007/backdrop": "^1.0",
+    "benlumia007/backdrop-mix-manifest": "^1.0"
   }
 }

@@ -1,1 +1,50 @@
-
+.section-portfolio {
+  background: #ffffff;
+}
+.section-portfolio .content-area {
+  margin: 0 auto;
+  max-width: 1170px;
+  padding: 1.125rem;
+}
+.section-portfolio .content-area .portfolio-header {
+  text-align: center;
+}
+.section-portfolio .content-area .portfolio-header .portfolio-title {
+  margin: 0;
+  padding: 0;
+}
+.section-portfolio .content-area .portfolio-tabs {
+  text-align: center;
+}
+.section-portfolio .content-area .portfolio-tabs .data-items {
+  display: flex;
+  list-style-type: none;
+  margin: 1.125rem;
+  padding: 0;
+  position: static;
+  justify-content: center;
+}
+.section-portfolio .content-area .portfolio-tabs .data-items .data-item {
+  cursor: pointer;
+  padding: 0.5rem;
+}
+.section-portfolio .content-area .portfolio-tabs .data-items .data-item.active {
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
+}
+.section-portfolio .content-area .portfolio-content .portfolio-items {
+  display: grid;
+  list-style-type: none;
+  grid-template-columns: 1fr 1fr 1fr;
+  grid-gap: 1.125rem;
+  margin: 0;
+  padding: 0;
+}
+.section-portfolio .content-area .portfolio-content .portfolio-items .portfolio-item .wp-caption {
+  text-align: center;
+}
+.section-portfolio .content-area .portfolio-content .portfolio-items .portfolio-item .wp-caption-text {
+  margin: 0;
+  padding: 0;
+}
