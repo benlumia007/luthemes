@@ -18,7 +18,7 @@ const rimraf  = require( 'rimraf' );
 const fs      = require( 'fs' );
 
 // Folder name to export the files to.
-let exportPath = 'luthemes.com';
+let exportPath = 'luthemes';
 
 // Theme root-level files to include.
 let files = [
