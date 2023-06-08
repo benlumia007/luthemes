@@ -20,6 +20,7 @@
   "require": {
     "php": ">=7.0",
     "benlumia007/backdrop": "^1.0",
-    "benlumia007/backdrop-mix-manifest": "^1.0"
+    "benlumia007/backdrop-mix-manifest": "^1.0",
+    "ext-zip": "*"
   }
 }

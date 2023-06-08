@@ -48,3 +48,36 @@
   margin: 0;
   padding: 0;
 }
+
+.theme-info {
+  border-collapse: collapse;
+  font-size: 14px;
+  width: 100%;
+}
+.theme-info tr:nth-of-type(odd) {
+  background: #eeeeee;
+}
+.theme-info th {
+  border: 0.063rem solid #cccccc;
+  padding: 0.2rem;
+  text-align: left;
+}
+.theme-info td {
+  border: 0.063rem solid #cccccc;
+  padding: 0.2rem;
+  text-align: right;
+}
+.theme-info td button {
+  background: linear-gradient(180deg, #4B91F7 0%, #367AF6 100%);
+  border: none;
+  font-family: font-family(primary);
+  font-size: 1rem;
+  padding: 0.7rem 1rem;
+  width: 100%;
+}
+.theme-info td button .fa-download {
+  color: color(white);
+}
+.theme-info td button a {
+  color: color(white);
+}

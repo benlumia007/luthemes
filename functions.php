@@ -34,7 +34,7 @@ array_map( function( $file ) {
 }, [
 	'CodePotent/UpdateClient',
 	'framework',
+	'functions-helpers',
 	'functions-scripts'
 ] );
-
 
