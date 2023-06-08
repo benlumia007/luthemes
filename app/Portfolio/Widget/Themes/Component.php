@@ -52,28 +52,20 @@ class Component extends WP_Widget {
 
 		if ( ! $theme ) {
 
-			$token = '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';
-
 			$args = [
 				'headers' => [
-					'Authorization' => 'Bearer ' . $token,
+					'Authorization' => 'Bearer ' . MY_TOKEN,
 				]
 			];
 
-			echo $slug;
-
 			$uri = wp_remote_get( 'https://api.github.com/repos/luthemes/' . $slug . '/releases', $args );
 
-			if ( is_wp_error( $uri ) ) {
-				echo 'Error' . $uri->get_error_message();
-			} else {
-				// Retrieve the body of the $uri.
-				$theme = wp_remote_retrieve_body( $uri );
-				$theme = json_decode( $theme, true );
+			// Retrieve the body of the $uri.
+			$theme = wp_remote_retrieve_body( $uri );
+			$theme = json_decode( $theme, true );
 
-				// set the transient for 24 hours.
-				set_transient( $transient, $theme, 0 );
-			}
+			// set the transient for 24 hours.
+			set_transient( $transient, $theme, 0 );
 		}
 
 		# Enable the download_url() and wp_handle_sideload() functions
