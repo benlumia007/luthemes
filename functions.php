@@ -38,3 +38,6 @@ array_map( function( $file ) {
 	'functions-scripts'
 ] );
 
+// delete_transient( 'succotash_portfolio_theme_creativity' );
+// delete_transient( 'succotash_portfolio_theme_silver-quantum' );
+

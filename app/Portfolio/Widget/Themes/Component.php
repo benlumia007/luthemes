@@ -52,7 +52,7 @@ class Component extends WP_Widget {
 
 		if ( ! $theme ) {
 
-			$token = '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';
+			$token = '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';
 
 			$args = [
 				'headers' => [
@@ -60,7 +60,9 @@ class Component extends WP_Widget {
 				]
 			];
 
-			$uri = wp_remote_get( 'https://api.github.com/repos/benlumia007/' . $slug . '/releases', $args );
+			echo $slug;
+
+			$uri = wp_remote_get( 'https://api.github.com/repos/luthemes/' . $slug . '/releases', $args );
 
 			if ( is_wp_error( $uri ) ) {
 				echo 'Error' . $uri->get_error_message();
@@ -70,11 +72,9 @@ class Component extends WP_Widget {
 				$theme = json_decode( $theme, true );
 
 				// set the transient for 24 hours.
-				set_transient( $transient, $theme, HOUR_IN_SECONDS * 2 );
+				set_transient( $transient, $theme, 0 );
 			}
 		}
-
-		var_dump( $theme );
 
 		# Enable the download_url() and wp_handle_sideload() functions
 		require_once( ABSPATH . 'wp-admin/includes/file.php' );
