@@ -65,7 +65,7 @@ class Component extends WP_Widget {
 			$theme = json_decode( $theme, true );
 
 			// set the transient for 24 hours.
-			set_transient( $transient, $theme, 0 );
+			set_transient( $transient, $theme, HOUR_IN_SECONDS );
 		}
 
 		# Enable the download_url() and wp_handle_sideload() functions
