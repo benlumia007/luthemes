@@ -154,17 +154,13 @@ class Component implements Bootable {
 		if ( empty( $release ) ) {
 			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
 		} else {
-			global $post;
-
-			if ( $post->post_name ) {
-				echo '<p><strong>Release:</strong> ' . $release->name . '</p>';
-				echo '<p><strong>Published Date:</strong> ' . date( 'Y-m-d', strtotime( $release->published_at ) ) . '</p>';
-				if ( ! empty( $release->assets ) ) {
-					$latest_asset = $release->assets[0];
-					echo '<p><strong>Download:</strong> <a href="' . $latest_asset->browser_download_url . '">Download</a></p>';
-				} else {
-					echo '<p><strong>Download:</strong> N/A</p>';
-				}
+			echo '<p><strong>Release:</strong> ' . $release->name . '</p>';
+			echo '<p><strong>Published Date:</strong> ' . date( 'Y-m-d', strtotime( $release->published_at ) ) . '</p>';
+			if ( ! empty( $release->assets ) ) {
+				$latest_asset = $release->assets[0];
+				echo '<p><strong>Download:</strong> <a href="' . $latest_asset->browser_download_url . '">Download</a></p>';
+			} else {
+				echo '<p><strong>Download:</strong> N/A</p>';
 			}
 
 
