@@ -51,12 +51,28 @@ class Component implements Bootable {
 	/**
 	 * Registers the plugin settings.
 	 *
-	 * @since  1.0.0
+	 * @return array
+	 *@since  1.0.0
 	 * @access public
-	 * @return void
 	 */
 	public function register_settings() {
-		// Register your plugin settings here (if any)
+		$items = [];
+
+		$type = [
+			'post_type' => 'portfolio'
+		];
+
+		$posts = get_posts( $type );
+
+		foreach ( $posts  as $post ) {
+			$items[] = $post->post_name;
+		}
+		$items = array_unique( $items );
+		asort( $items);
+
+		return $items;
+
+
 	}
 
 	/**
