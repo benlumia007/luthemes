@@ -43,6 +43,7 @@ class Component implements Bootable {
 		);
 
 		if ( $this->settings_page ) {
+
 			// Register settings.
 			add_action( 'admin_init', array( $this, 'register_settings' ) );
 		}
@@ -129,34 +130,13 @@ class Component implements Bootable {
 			<h1>Latest GitHub Releases</h1>
 
 			<?php
-			$repositories = array(
-				array(
-					'username' => 'luthemes',
-					'repository' => 'creativity'
-				),
-				array(
-					'username' => 'luthemes',
-					'repository' => 'generosity'
-				),
-				array(
-					'username' => 'luthemes',
-					'repository' => 'individuality'
-				),
-				array(
-					'username' => 'luthemes',
-					'repository' => 'silver-quantum'
-				),
-				array(
-					'username' => 'luthemes',
-					'repository' => 'white-spektrum'
-				),
-				// Add more repositories here
-			);
+
+			$slugs = $this->register_settings();
 
 			echo '<ul class="grid-items" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-gap: 1.125rem;">';
-			foreach ( $repositories as $repo ) {
+			foreach ( $slugs as $repo ) {
 				echo '<li class="grid-items">';
-					$this->display_latest_release( $repo['username'], $repo['repository'] );
+					$this->display_latest_release( $repo );
 				echo '</li>';
 			}
 			echo '</ul>';
@@ -166,7 +146,7 @@ class Component implements Bootable {
 		<?php
 	}
 
-	public function display_latest_release( $username, $repository ) {
+	public function display_latest_release( $repository ) {
 		$api_token = get_option( 'github_api_token' );
 
 		if ( empty( $api_token ) ) {
@@ -174,7 +154,7 @@ class Component implements Bootable {
 			exit;
 		}
 
-		$releases_url = "https://api.github.com/repos/$username/$repository/releases/latest";
+		$releases_url = "https://api.github.com/repos/luthemes/$repository/releases/latest";
 
 		$response = wp_remote_get( $releases_url, array(
 			'headers' => array(
@@ -230,24 +210,20 @@ class Component implements Bootable {
 	 * @access public
 	 * @return string
 	 */
-	public function shortcode_content( $atts ) {
+	public function shortcode_content( $args ) {
 		global $post;
 
 		// Process the shortcode attributes
-		$atts = shortcode_atts( array(
-			'username' => 'luthemes',
+		$args = shortcode_atts( [
 			'repository' => $post->post_name,
-		), $atts );
+		], $args );
 
 		// Extract the username and repository from the attributes
-		$username = $atts['username'];
-		$repository = $atts['repository'];
-
-
+		$repository = $args['repository'];
 
 		// Call the method to display the latest release
 		ob_start();
-		$this->display_latest_release( $username, $repository );
+		$this->display_latest_release( $repository );
 		return ob_get_clean();
 	}
 
