@@ -79,7 +79,35 @@ class Component implements Bootable {
 	 * @access public
 	 * @return void
 	 */
-	public function settings_page() { ?>
+	public function settings_page() {
+		if ( isset( $_POST['save_settings'] ) ) {
+			$api_token = sanitize_text_field( $_POST['github_api_token'] );
+
+			if ( empty( $api_token ) ) {
+				echo '<div class="notice notice-error"><p>Please enter a GitHub API token.</p></div>';
+			} else {
+				update_option( 'github_api_token', $api_token );
+				echo '<div class="notice notice-success"><p>Settings saved successfully.</p></div>';
+			}
+		}
+
+		$api_token = get_option( 'github_api_token' );
+
+
+
+		?>
+		<div class="wrap">
+			<h1>GitHub API Settings</h1>
+
+			<form method="post" action="">
+				<label for="github_api_token">GitHub API Token:</label>
+				<input type="text" name="github_api_token" value="<?php echo esc_attr( $api_token ); ?>" placeholder="Enter your GitHub API token">
+
+				<p>
+					<input type="submit" name="save_settings" class="button button-primary" value="Save Settings">
+				</p>
+			</form>
+		</div>
 
 		<div class="wrap">
 			<h1>Latest GitHub Releases</h1>
@@ -92,6 +120,14 @@ class Component implements Bootable {
 				),
 				array(
 					'username' => 'luthemes',
+					'repository' => 'generosity'
+				),
+				array(
+					'username' => 'luthemes',
+					'repository' => 'individuality'
+				),
+				array(
+					'username' => 'luthemes',
 					'repository' => 'silver-quantum'
 				),
 				array(
@@ -101,9 +137,13 @@ class Component implements Bootable {
 				// Add more repositories here
 			);
 
+			echo '<ul class="grid-items" style="display: grid; grid-template-columns: 1fr 1fr 1fr 1fr 1fr; grid-gap: 1.125rem;">';
 			foreach ( $repositories as $repo ) {
-				$this->display_latest_release( $repo['username'], $repo['repository'] );
+				echo '<li class="grid-items">';
+					$this->display_latest_release( $repo['username'], $repo['repository'] );
+				echo '</li>';
 			}
+			echo '</ul>';
 			?>
 
 		</div>
@@ -114,15 +154,15 @@ class Component implements Bootable {
 		$api_token = get_option( 'github_api_token' );
 
 		if ( empty( $api_token ) ) {
-			echo '<div class="notice notice-error"><p>Please set the GitHub API token in the settings.</p></div>';
-			return;
+			echo '<div class="notice notice-warning"><p>Please set the GitHub API Token in the settings above before continuing.</p></div>';
+			exit;
 		}
 
 		$releases_url = "https://api.github.com/repos/$username/$repository/releases/latest";
 
 		$response = wp_remote_get( $releases_url, array(
 			'headers' => array(
-				'Authorization' => 'Bearer ' . GITHUB_API_TOKEN,
+				'Authorization' => 'Bearer ' . $api_token,
 				'Accept' => 'application/vnd.github.v3+json'
 			)
 		) );
@@ -140,23 +180,22 @@ class Component implements Bootable {
 			$string = $repository;
 			$newString = str_replace( "-", " ", $string );
 			$newString = ucwords( $newString);
-			echo '<h2 class="github">' . $newString . '</h2>';
+			echo '<h2 class="github" style="margin: 0.5rem 0; padding: 0;">' . $newString . '</h2>';
 			echo '<table class="theme-info widefat fixed striped">';
 			echo '<tbody>';
 			echo '<tr>';
-			echo '<th>Release:</th>';
-			echo '<td>' . $release->tag_name . '</td>';
+			echo '<th style="text-align: left;"><strongth><strong>Version</strong></th>';
+			echo '<td style="text-align: right;">' . $release->tag_name . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<th>Last Updated:</th>';
-			echo '<td>' . date( 'F d, Y', strtotime( $release->published_at ) ) . '</td>';
+			echo '<th style="text-align: left;"><strong>' . esc_html__( 'Last Updated', 'succotash' ). '</strong></th>';
+			echo '<td style="text-align: right;">' . date( 'F d, Y', strtotime( $release->published_at ) ) . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<th>Download:</th>';
-			echo '<td>';
+			echo '<td colspan="2" style="text-align: center">';
 			if ( ! empty( $release->assets ) ) {
 				$latest_asset = $release->assets[0];
-				echo '<a href="' . $latest_asset->browser_download_url . '">Download</a>';
+				echo '<button><a href="' . $latest_asset->browser_download_url . '">Download</a></button>';
 			} else {
 				echo '<strong>Download:</strong> N/A';
 			}
@@ -166,6 +205,7 @@ class Component implements Bootable {
 			echo '</table>';
 		}
 	}
+
 
 	/**
 	 * Renders the shortcode content.
