@@ -33,9 +33,9 @@ class Component implements Bootable {
 
 			$uri = wp_remote_get( 'https://api.github.com/repos/benlumia007/' . $slug . '/releases' );
 
-			// Retrieve the body of the $uri.
-			$theme = wp_remote_retrieve_body( $uri );
-			$theme = json_decode( $theme );
+				// Retrieve the body of the $uri.
+				$theme = wp_remote_retrieve_body( $uri );
+				$theme = json_decode( $theme );
 
 			// set the transient for 24 hours.
 			set_transient( $transient, $theme, 5 );
