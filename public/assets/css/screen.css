@@ -55,7 +55,7 @@
 
 .theme-info {
   border-collapse: collapse;
-  font-size: 14px;
+  font-size: 1rem;
   width: 100%;
 }
 .theme-info tr:nth-of-type(odd) {

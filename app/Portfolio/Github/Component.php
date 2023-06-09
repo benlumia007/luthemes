@@ -12,6 +12,7 @@
 namespace Succotash\Portfolio\GitHub;
 
 use Backdrop\Contracts\Bootable;
+use ZipArchive;
 
 class Component implements Bootable {
 
@@ -127,7 +128,7 @@ class Component implements Bootable {
 		</div>
 
 		<div class="wrap">
-			<h1>Latest GitHub Releases</h1>
+			<h1>Latest Releases</h1>
 
 			<?php
 
@@ -156,46 +157,114 @@ class Component implements Bootable {
 
 		$releases_url = "https://api.github.com/repos/luthemes/$repository/releases/latest";
 
-		$response = wp_remote_get( $releases_url, array(
-			'headers' => array(
+		$response = wp_remote_get( $releases_url, [
+			'headers' => [
 				'Authorization' => 'Bearer ' . $api_token,
 				'Accept' => 'application/vnd.github.v3+json'
-			)
-		) );
+			]
+		] );
 
 		if ( is_wp_error( $response ) ) {
 			echo '<div class="notice notice-error"><p>Error retrieving latest release from GitHub API for repository: ' . $repository . '</p></div>';
 			return;
 		}
 
-		$release = json_decode( wp_remote_retrieve_body( $response ) );
+		$release = json_decode( wp_remote_retrieve_body( $response ), true );
 
 		if ( empty( $release ) ) {
 			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
 		} else {
 			$string = $repository;
 			$newString = str_replace( "-", " ", $string );
-			$newString = ucwords( $newString);
-			echo '<h2 class="github" style="margin: 0.5rem 0; padding: 0;">' . $newString . '</h2>';
+			$name = ucwords( $newString);
+			$version = $release['tag_name'];
+			$published = date( 'F d, Y', strtotime( $release['published_at'] ) );
+			$download = ! empty($release['assets'][0]) ? '<button><a href="' . $release['assets'][0]['browser_download_url'] . '">Download</a></button>' : '<strong>Download:</strong> N/A';
+
+			// Grab information from Theme's style.css
+			$cp       = '';
+			$wp       = '';
+			$php      = '';
+			$repo_url = '';
+
+			if ( ! empty( $release['assets'] ) ) {
+
+				$latest = $release['assets'][0];
+				$url = $latest['browser_download_url'];
+
+				$repo_url = "https://github.com/luthemes/{$name}";
+
+
+				# Enable the download_url() and wp_handle_sideload() functions
+				require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+				$temp = download_url( $url, 5 );
+
+				$file = [
+					'name'     => basename( $url ),
+					'type'     => 'application/zip',
+					'tmp_name' => $temp,
+					'error'    => 0,
+					'size'     => filesize( $temp ),
+				];
+
+				$zip = new ZipArchive();
+				$zip->open( $file['tmp_name'] );
+				$slug = strstr( $zip->getFromIndex( 0 ), '/', true );
+
+				// $sum = round( $file['size'] / 1000000, 2 );
+				// echo $sum . 'MB';
+
+				$index = $zip->locateName( 'style.css', ZipArchive::FL_NOCASE | ZipArchive::FL_NODIR );
+				$style   = $zip->getFromIndex( $index, 8192, ZipArchive::FL_UNCHANGED );
+
+				preg_match( '/Requires PHP:\s*([\d\.]+)/', $style, $requiresPHP );
+				preg_match( '/Requires CP:\s*([\d\.]+)/', $style, $requiresCP );
+				preg_match( '/Tested up to:\s*([\d\.]+)/', $style, $requiresWP );
+
+				if ( isset( $requiresPHP[1] ) ) {
+					$php = $requiresPHP[1];
+				}
+
+				if ( isset( $requiresCP[1] ) ) {
+					$cp = $requiresCP[1];
+				}
+
+				if ( isset( $requiresWP[1] ) ) {
+					$wp = $requiresWP[1];
+				}
+			}
+
+			echo '<h2 class="github" style="margin: 0.5rem 0; padding: 0;">' . $name . '</h2>';
 			echo '<table class="theme-info widefat fixed striped">';
 			echo '<tbody>';
 			echo '<tr>';
 			echo '<th style="text-align: left;"><strongth><strong>Version</strong></th>';
-			echo '<td style="text-align: right;">' . $release->tag_name . '</td>';
+			echo '<td style="text-align: right;">' . esc_html( $version ) . '</td>';
 			echo '</tr>';
 			echo '<tr>';
 			echo '<th style="text-align: left;"><strong>' . esc_html__( 'Last Updated', 'succotash' ). '</strong></th>';
-			echo '<td style="text-align: right;">' . date( 'F d, Y', strtotime( $release->published_at ) ) . '</td>';
+			echo '<td style="text-align: right;">' . esc_html( $published ) . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td colspan="2" style="text-align: center">';
-			if ( ! empty( $release->assets ) ) {
-				$latest_asset = $release->assets[0];
-				echo '<button><a href="' . $latest_asset->browser_download_url . '">Download</a></button>';
+			if ( $cp ) {
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'ClassicPress', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $cp ) . '</td>';
 			} else {
-				echo '<strong>Download:</strong> N/A';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'WordPress', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $wp ) . '</td>';
 			}
-			echo '</td>';
+			echo '</tr>';
+			echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'PHP', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $php ) . '</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<th style="text-align: left;"><strong>' . esc_html__( 'Repository', 'succotash' ). '</strong></th>';
+			echo '<td style="text-align: right;"><i class="fab fa-github"></i> <a href="' . esc_url_raw(  $repo_url ) . '">' . esc_html__( 'GitHub', 'succcotash' ) . '</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td colspan="2" style="text-align: center">' . $download . '</td>';
 			echo '</tr>';
 			echo '</tbody>';
 			echo '</table>';
