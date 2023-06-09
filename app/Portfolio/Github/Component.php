@@ -79,28 +79,7 @@ class Component implements Bootable {
 	 * @access public
 	 * @return void
 	 */
-	public function settings_page() {
-		if ( isset( $_POST['save_settings'] ) ) {
-			$api_token = sanitize_text_field( $_POST['github_api_token'] );
-			update_option( 'github_api_token', $api_token );
-			echo '<div class="notice notice-success"><p>Settings saved successfully.</p></div>';
-		}
-
-		$api_token = get_option( 'github_api_token' );
-
-		?>
-		<div class="wrap">
-			<h1>GitHub API Settings</h1>
-
-			<form method="post" action="">
-				<label for="github_api_token">GitHub API Token:</label>
-				<input type="text" name="github_api_token" value="<?php echo esc_attr( $api_token ); ?>" placeholder="Enter your GitHub API token">
-
-				<p>
-					<input type="submit" name="save_settings" class="button button-primary" value="Save Settings">
-				</p>
-			</form>
-		</div>
+	public function settings_page() { ?>
 
 		<div class="wrap">
 			<h1>Latest GitHub Releases</h1>
@@ -143,7 +122,7 @@ class Component implements Bootable {
 
 		$response = wp_remote_get( $releases_url, array(
 			'headers' => array(
-				'Authorization' => 'Bearer ' . $api_token,
+				'Authorization' => 'Bearer ' . GITHUB_API_TOKEN,
 				'Accept' => 'application/vnd.github.v3+json'
 			)
 		) );
