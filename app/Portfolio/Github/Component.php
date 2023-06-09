@@ -115,6 +115,10 @@ class Component implements Bootable {
 					'username' => 'luthemes',
 					'repository' => 'silver-quantum'
 				),
+				array(
+					'username' => 'luthemes',
+					'repository' => 'white-spektrum'
+				),
 				// Add more repositories here
 			);
 
@@ -154,24 +158,28 @@ class Component implements Bootable {
 		if ( empty( $release ) ) {
 			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
 		} else {
+			$string = $repository;
+			$newString = str_replace( "-", " ", $string );
+			$newString = ucwords( $newString);
+			echo '<h2 class="github">' . $newString . '</h2>';
 			echo '<table class="theme-info widefat fixed striped">';
 			echo '<tbody>';
 			echo '<tr>';
-			echo '<td style="text-align: left"><strong>Version:</strong></td>';
+			echo '<th>Release:</th>';
 			echo '<td>' . $release->tag_name . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td style="text-align: left"><strong>Published Date:</strong></td>';
+			echo '<th>Last Updated:</th>';
 			echo '<td>' . date( 'F d, Y', strtotime( $release->published_at ) ) . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td style="text-align: left;"><strong>Download:</strong></td>';
+			echo '<th>Download:</th>';
 			echo '<td>';
 			if ( ! empty( $release->assets ) ) {
 				$latest_asset = $release->assets[0];
 				echo '<a href="' . $latest_asset->browser_download_url . '">Download</a>';
 			} else {
-				echo 'N/A';
+				echo '<strong>Download:</strong> N/A';
 			}
 			echo '</td>';
 			echo '</tr>';
