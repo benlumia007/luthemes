@@ -105,7 +105,9 @@ class Component implements Bootable {
 				$github_repos = $this->get_github_repos();
 
 				foreach ( $github_repos as $theme ) {
-
+					foreach ( $theme as $item) {
+						echo $item;
+					}
 				}
 
 				if ( $github_repos ) {
@@ -153,7 +155,8 @@ class Component implements Bootable {
 			}
 
 			$repos = wp_remote_retrieve_body( $response );
-			return json_decode( $repos, true );
+			$repos = json_decode( $repos, true );
+			return $repos;
 		}
 	}
 
