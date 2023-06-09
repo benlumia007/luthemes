@@ -154,16 +154,29 @@ class Component implements Bootable {
 		if ( empty( $release ) ) {
 			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
 		} else {
-			echo '<p><strong>Release:</strong> ' . $release->name . '</p>';
-			echo '<p><strong>Published Date:</strong> ' . date( 'Y-m-d', strtotime( $release->published_at ) ) . '</p>';
+			echo '<table class="wp-list-table widefat fixed striped">';
+			echo '<tbody>';
+			echo '<tr>';
+			echo '<td><strong>Release:</strong></td>';
+			echo '<td>' . $release->tag_name . '</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td><strong>Published Date:</strong></td>';
+			echo '<td>' . date( 'Y-m-d', strtotime( $release->published_at ) ) . '</td>';
+			echo '</tr>';
+			echo '<tr>';
+			echo '<td><strong>Download:</strong></td>';
+			echo '<td>';
 			if ( ! empty( $release->assets ) ) {
 				$latest_asset = $release->assets[0];
-				echo '<p><strong>Download:</strong> <a href="' . $latest_asset->browser_download_url . '">Download</a></p>';
+				echo '<a href="' . $latest_asset->browser_download_url . '">Download</a>';
 			} else {
-				echo '<p><strong>Download:</strong> N/A</p>';
+				echo 'N/A';
 			}
-
-
+			echo '</td>';
+			echo '</tr>';
+			echo '</tbody>';
+			echo '</table>';
 		}
 	}
 
@@ -179,7 +192,7 @@ class Component implements Bootable {
 
 		// Process the shortcode attributes
 		$atts = shortcode_atts( array(
-			'username' => '',
+			'username' => 'luthemes',
 			'repository' => $post->post_name,
 		), $atts );
 
@@ -187,13 +200,7 @@ class Component implements Bootable {
 		$username = $atts['username'];
 		$repository = $atts['repository'];
 
-		// Check if the shortcode is used on a specific post type
-		global $post;
-		$post_type = isset( $post->post_type ) ? $post->post_type : '';
 
-		if ( $post_type !== 'portfolio' ) {
-			return 'This shortcode is only available on portfolio pages.';
-		}
 
 		// Call the method to display the latest release
 		ob_start();
