@@ -20,7 +20,7 @@ class Component implements Bootable {
 	 *
 	 * @since  1.0.0
 	 * @access public
-	 * @return string
+	 * @var string
 	 */
 	public $settings_page = '';
 
@@ -32,19 +32,17 @@ class Component implements Bootable {
 	 * @return void
 	 */
 	public function admin_menu() {
-
 		// Create the settings page.
 		$this->settings_page = add_submenu_page(
 			'edit.php?post_type=' . 'portfolio',
 			esc_html__( 'GitHub Settings', 'backdrop-custom-portfolio' ),
-			esc_html__( 'GitHub',           'backdrop-custom-portfolio' ),
+			esc_html__( 'GitHub', 'backdrop-custom-portfolio' ),
 			'manage_options',
 			'github-settings',
 			array( $this, 'settings_page' )
 		);
 
 		if ( $this->settings_page ) {
-
 			// Register settings.
 			add_action( 'admin_init', array( $this, 'register_settings' ) );
 		}
@@ -57,8 +55,8 @@ class Component implements Bootable {
 	 * @access public
 	 * @return void
 	 */
-	function register_settings() {
-
+	public function register_settings() {
+		// Register your plugin settings here (if any)
 	}
 
 	/**
@@ -69,7 +67,6 @@ class Component implements Bootable {
 	 * @return void
 	 */
 	public function section_general() { ?>
-
 		<p class="description">
 			<?php esc_html_e( 'General portfolio settings for your site.', 'backdrop-custom-portfolio' ); ?>
 		</p>
@@ -83,86 +80,158 @@ class Component implements Bootable {
 	 * @return void
 	 */
 	public function settings_page() {
-		if ( isset( $_POST['save_github_repos'] ) && wp_verify_nonce( $_POST['save_github_repos_nonce'], 'save_github_repos' ) ) {
-			// Handle saving logic here
-			$repos_to_save = $_POST['selected_repos'];
-			update_option( 'github_repos', $repos_to_save );
-			echo '<div class="notice notice-success"><p>GitHub repositories saved successfully!</p></div>';
+		if ( isset( $_POST['save_settings'] ) ) {
+			$api_token = sanitize_text_field( $_POST['github_api_token'] );
+			update_option( 'github_api_token', $api_token );
+			echo '<div class="notice notice-success"><p>Settings saved successfully.</p></div>';
 		}
 
-		// Retrieve saved repositories from the options
-		$saved_repos = get_option( 'github_repos', array() );
+		$api_token = get_option( 'github_api_token' );
 
 		?>
 		<div class="wrap">
-			<h1><?php esc_html_e( 'GitHub Repositories', 'backdrop-custom-portfolio' ); ?></h1>
+			<h1>GitHub API Settings</h1>
 
 			<form method="post" action="">
-				<?php wp_nonce_field( 'save_github_repos', 'save_github_repos_nonce' ); ?>
-
-				<?php
-				// Retrieve repositories using the GitHub API
-				$github_repos = $this->get_github_repos();
-
-				foreach ( $github_repos as $theme ) {
-					foreach ( $theme as $item) {
-						echo $item;
-					}
-				}
-
-				if ( $github_repos ) {
-
-				} else {
-					echo '<p>No repositories found.</p>';
-				}
-				?>
+				<label for="github_api_token">GitHub API Token:</label>
+				<input type="text" name="github_api_token" value="<?php echo esc_attr( $api_token ); ?>" placeholder="Enter your GitHub API token">
 
 				<p>
-					<button type="submit" name="save_github_repos" class="button button-primary">Save Repositories</button>
+					<input type="submit" name="save_settings" class="button button-primary" value="Save Settings">
 				</p>
 			</form>
-		</div><!-- wrap -->
-		<?php }
+		</div>
 
-	/**
-	 * Retrieves repositories using the GitHub API.
-	 *
-	 * @return array|bool Array of repositories or false on failure.
-	 */
-	public function get_github_repos() {
-		$posts = [
-			'post_type' => 'portfolio',
-		];
+		<div class="wrap">
+			<h1>Latest GitHub Releases</h1>
 
-		$portfolio = get_posts( $posts );
+			<?php
+			$repositories = array(
+				array(
+					'username' => 'luthemes',
+					'repository' => 'creativity'
+				),
+				array(
+					'username' => 'luthemes',
+					'repository' => 'silver-quantum'
+				),
+				// Add more repositories here
+			);
 
-		foreach ( $portfolio as $item ) {
-			$slug = $item->post_name;
+			foreach ( $repositories as $repo ) {
+				$this->display_latest_release( $repo['username'], $repo['repository'] );
+			}
+			?>
 
-			$args = [
-				'headers' => [
-					'Authorization' => 'Bearer ' . GITHUB_API_TOKEN,
-				]
-			];
+		</div>
+		<?php
+	}
 
-			$github_api_url = 'https://api.github.com/repos/luthemes/' . $slug . '/releases';
+	public function display_latest_release( $username, $repository ) {
+		$api_token = get_option( 'github_api_token' );
 
-			// Retrieve repositories using the GitHub API (example code)
-			$response = wp_remote_get( $github_api_url, $args );
+		if ( empty( $api_token ) ) {
+			echo '<div class="notice notice-error"><p>Please set the GitHub API token in the settings.</p></div>';
+			return;
+		}
 
-			if ( is_wp_error( $response ) ) {
-				return false;
+		$releases_url = "https://api.github.com/repos/$username/$repository/releases/latest";
+
+		$response = wp_remote_get( $releases_url, array(
+			'headers' => array(
+				'Authorization' => 'Bearer ' . $api_token,
+				'Accept' => 'application/vnd.github.v3+json'
+			)
+		) );
+
+		if ( is_wp_error( $response ) ) {
+			echo '<div class="notice notice-error"><p>Error retrieving latest release from GitHub API for repository: ' . $repository . '</p></div>';
+			return;
+		}
+
+		$release = json_decode( wp_remote_retrieve_body( $response ) );
+
+		if ( empty( $release ) ) {
+			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
+		} else {
+			global $post;
+
+			if ( $post->post_name ) {
+				echo '<p><strong>Release:</strong> ' . $release->name . '</p>';
+				echo '<p><strong>Published Date:</strong> ' . date( 'Y-m-d', strtotime( $release->published_at ) ) . '</p>';
+				if ( ! empty( $release->assets ) ) {
+					$latest_asset = $release->assets[0];
+					echo '<p><strong>Download:</strong> <a href="' . $latest_asset->browser_download_url . '">Download</a></p>';
+				} else {
+					echo '<p><strong>Download:</strong> N/A</p>';
+				}
 			}
 
-			$repos = wp_remote_retrieve_body( $response );
-			$repos = json_decode( $repos, true );
-			return $repos;
+
 		}
 	}
 
+	/**
+	 * Renders the shortcode content.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 * @return string
+	 */
+	public function shortcode_content( $atts ) {
+		global $post;
+
+		// Process the shortcode attributes
+		$atts = shortcode_atts( array(
+			'username' => '',
+			'repository' => $post->post_name,
+		), $atts );
+
+		// Extract the username and repository from the attributes
+		$username = $atts['username'];
+		$repository = $atts['repository'];
+
+		// Check if the shortcode is used on a specific post type
+		global $post;
+		$post_type = isset( $post->post_type ) ? $post->post_type : '';
+
+		if ( $post_type !== 'portfolio' ) {
+			return 'This shortcode is only available on portfolio pages.';
+		}
+
+		// Call the method to display the latest release
+		ob_start();
+		$this->display_latest_release( $username, $repository );
+		return ob_get_clean();
+	}
+
+	/**
+	 * Registers the shortcode.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 * @return void
+	 */
+	public function register_shortcode() {
+		add_shortcode( 'latest_release', array( $this, 'shortcode_content' ) );
+	}
+
+	/**
+	 * Boot the component.
+	 *
+	 * @since  1.0.0
+	 * @access public
+	 * @return void
+	 */
 	public function boot() {
 
 		// Custom columns on the edit portfolio items screen.
 		add_action( 'admin_menu', array( $this, 'admin_menu' ) );
+
+		// Register settings (if any)
+		add_action( 'admin_init', array( $this, 'register_settings' ) );
+
+		// Register shortcode
+		add_action( 'init', array( $this, 'register_shortcode' ) );
 	}
 }
