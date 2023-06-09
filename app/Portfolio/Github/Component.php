@@ -154,18 +154,18 @@ class Component implements Bootable {
 		if ( empty( $release ) ) {
 			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
 		} else {
-			echo '<table class="wp-list-table widefat fixed striped">';
+			echo '<table class="theme-info widefat fixed striped">';
 			echo '<tbody>';
 			echo '<tr>';
-			echo '<td><strong>Release:</strong></td>';
+			echo '<td style="text-align: left"><strong>Version:</strong></td>';
 			echo '<td>' . $release->tag_name . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td><strong>Published Date:</strong></td>';
-			echo '<td>' . date( 'Y-m-d', strtotime( $release->published_at ) ) . '</td>';
+			echo '<td style="text-align: left"><strong>Published Date:</strong></td>';
+			echo '<td>' . date( 'F d, Y', strtotime( $release->published_at ) ) . '</td>';
 			echo '</tr>';
 			echo '<tr>';
-			echo '<td><strong>Download:</strong></td>';
+			echo '<td style="text-align: left;"><strong>Download:</strong></td>';
 			echo '<td>';
 			if ( ! empty( $release->assets ) ) {
 				$latest_asset = $release->assets[0];
