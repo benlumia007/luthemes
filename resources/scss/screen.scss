@@ -85,6 +85,7 @@
     border: 0.063rem solid #cccccc;
     padding: 0.2rem;
     text-align: left;
+    width: 50%;
 
 
   }
@@ -95,12 +96,13 @@
     text-align: right;
 
     button {
-      background: linear-gradient(180deg, #4B91F7 0%, #367AF6 100%);
-      border: none;
+      background: #0085ba;
+      border-color: #0073aa #006799 #006799;
       font-family: font-family( primary );
+      border-radius: 5px;
       font-size: 1rem;
-      padding: 0.7rem 1rem;
-      width: 100%;
+      margin: 0.250rem;
+      padding: 0.5rem 1rem;
 
       .fa-download {
         color: color( white );

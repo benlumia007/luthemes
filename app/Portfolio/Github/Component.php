@@ -177,9 +177,9 @@ class Component implements Bootable {
 			$string = $repository;
 			$newString = str_replace( "-", " ", $string );
 			$name = ucwords( $newString);
-			$version = $release['tag_name'];
-			$published = date( 'F d, Y', strtotime( $release['published_at'] ) );
-			$download = ! empty($release['assets'][0]) ? '<button><a href="' . $release['assets'][0]['browser_download_url'] . '">Download</a></button>' : '<strong>Download:</strong> N/A';
+			$version = $release['tag_name'] ?? '';
+			$published = isset( $release['published_at'] ) ? date('F d, Y', strtotime( $release['published_at'] ) ) : '';
+			$download = ! empty($release['assets'][0]) ? '<button class="button button-primary"><a style="color: white;" href="' . $release['assets'][0]['browser_download_url'] . '">Download</a></button>' : '<button class="button button-primary">' . esc_html__( 'No Releases', 'succotash' ) . '</button>';
 
 			// Grab information from Theme's style.css
 			$cp       = '';
@@ -192,7 +192,7 @@ class Component implements Bootable {
 				$latest = $release['assets'][0];
 				$url = $latest['browser_download_url'];
 
-				$repo_url = "https://github.com/luthemes/{$name}";
+				$repo_url = "https://github.com/luthemes/$repository";
 
 
 				# Enable the download_url() and wp_handle_sideload() functions
@@ -236,38 +236,74 @@ class Component implements Bootable {
 			}
 
 			echo '<h2 class="github" style="margin: 0.5rem 0; padding: 0;">' . $name . '</h2>';
-			echo '<table class="theme-info widefat fixed striped">';
-			echo '<tbody>';
-			echo '<tr>';
-			echo '<th style="text-align: left;"><strongth><strong>Version</strong></th>';
-			echo '<td style="text-align: right;">' . esc_html( $version ) . '</td>';
-			echo '</tr>';
-			echo '<tr>';
-			echo '<th style="text-align: left;"><strong>' . esc_html__( 'Last Updated', 'succotash' ). '</strong></th>';
-			echo '<td style="text-align: right;">' . esc_html( $published ) . '</td>';
-			echo '</tr>';
-			echo '<tr>';
-			if ( $cp ) {
-				echo '<th style="text-align: left;"><strong>' . esc_html__( 'ClassicPress', 'succotash' ). '</strong></th>';
-				echo '<td style="text-align: right;">' . esc_html( $cp ) . '</td>';
-			} else {
-				echo '<th style="text-align: left;"><strong>' . esc_html__( 'WordPress', 'succotash' ). '</strong></th>';
-				echo '<td style="text-align: right;">' . esc_html( $wp ) . '</td>';
-			}
-			echo '</tr>';
-			echo '<tr>';
-				echo '<th style="text-align: left;"><strong>' . esc_html__( 'PHP', 'succotash' ). '</strong></th>';
+
+			if (  ! empty( $release['tag_name'] )  ) {
+				echo '<table class="theme-info widefat fixed striped">';
+				echo '<tbody>';
+				echo '<tr>';
+				echo '<th style="text-align: left;">' . esc_html__( 'Version', 'succotash' ) . '</th>';
+				echo '<td style="text-align: right;">' . esc_html( $version ) . '</td>';
+				echo '</tr>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'Last Updated', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $published ) . '</td>';
+				echo '</tr>';
+				echo '<tr>';
+				if ( $cp ) {
+					echo '<th style="text-align: left;"><strong>' . esc_html__( 'ClassicPress version', 'succotash' ). '</strong></th>';
+					echo '<td style="text-align: right;">' . esc_html( $cp ) . '</td>';
+				} else {
+					echo '<th style="text-align: left;"><strong>' . esc_html__( 'WordPress version', 'succotash' ). '</strong></th>';
+					echo '<td style="text-align: right;">' . esc_html( $wp ) . '</td>';
+				}
+				echo '</tr>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'PHP version', 'succotash' ). '</strong></th>';
 				echo '<td style="text-align: right;">' . esc_html( $php ) . '</td>';
-			echo '</tr>';
-			echo '<tr>';
-			echo '<th style="text-align: left;"><strong>' . esc_html__( 'Repository', 'succotash' ). '</strong></th>';
-			echo '<td style="text-align: right;"><i class="fab fa-github"></i> <a href="' . esc_url_raw(  $repo_url ) . '">' . esc_html__( 'GitHub', 'succcotash' ) . '</td>';
-			echo '</tr>';
-			echo '<tr>';
-			echo '<td colspan="2" style="text-align: center">' . $download . '</td>';
-			echo '</tr>';
-			echo '</tbody>';
-			echo '</table>';
+				echo '</tr>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'Repository', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;"><i class="fab fa-github"></i> <a href="' . esc_url_raw(  $repo_url ) . '">' . esc_html__( 'GitHub', 'succcotash' ) . '</td>';
+				echo '</tr>';
+				echo '<tr>';
+				echo '<td colspan="2" style="text-align: center">' . $download . '</td>';
+				echo '</tr>';
+				echo '</tbody>';
+				echo '</table>';
+			} else {
+				echo '<table class="theme-info widefat fixed striped">';
+				echo '<tbody>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strongth><strong>Version</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $version ) . '</td>';
+				echo '</tr>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'Last Updated', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $published ) . '</td>';
+				echo '</tr>';
+				echo '<tr>';
+				if ( $cp ) {
+					echo '<th style="text-align: left;"><strong>' . esc_html__( 'ClassicPress version', 'succotash' ). '</strong></th>';
+					echo '<td style="text-align: right;">' . esc_html( $cp ) . '</td>';
+				} else {
+					echo '<th style="text-align: left;"><strong>' . esc_html__( 'WordPress version', 'succotash' ). '</strong></th>';
+					echo '<td style="text-align: right;">' . esc_html( $wp ) . '</td>';
+				}
+				echo '</tr>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'PHP version', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;">' . esc_html( $php ) . '</td>';
+				echo '</tr>';
+				echo '<tr>';
+				echo '<th style="text-align: left;"><strong>' . esc_html__( 'Repository', 'succotash' ). '</strong></th>';
+				echo '<td style="text-align: right;"></td>';
+				echo '</tr>';
+				echo '<tr>';
+				echo '<td colspan="2" style="text-align: center">' . $download . '</td>';
+				echo '</tr>';
+				echo '</tbody>';
+				echo '</table>';
+			}
 		}
 	}
 
