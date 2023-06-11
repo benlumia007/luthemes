@@ -61,7 +61,8 @@ class Component implements Bootable {
 		$items = [];
 
 		$type = [
-			'post_type' => 'portfolio'
+			'post_type' => 'portfolio',
+			'numberposts' => -1,
 		];
 
 		$posts = get_posts( $type );
