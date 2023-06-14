@@ -9,7 +9,7 @@
  * @link      https://github.com/benlumia007/backdrop-custom-portfolio
  */
 
-namespace Succotash\Portfolio\GitHub;
+namespace Succotash\Portfolio\test;
 
 use Backdrop\Contracts\Bootable;
 use ZipArchive;
