@@ -18,7 +18,7 @@
     }
   },
   "require": {
-    "php": ">=7.1",
+    "php": ">=8.0",
     "backdrop-dev/framework": "^1.0",
     "backdrop-dev/mix": "^1.0",
     "ext-zip": "*"

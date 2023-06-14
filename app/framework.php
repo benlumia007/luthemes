@@ -27,7 +27,7 @@ $succotash = Backdrop\booted() ? Backdrop\app() : new Backdrop\Core\Application(
  * Here are the default service providers that are essential for the theme to function before
  * booting the application. These service providers form the foundation for the theme.
  */
-$succotash->provider( Backdrop\Mix\Manifest\Provider::class );
+$succotash->provider( Backdrop\Mix\Provider::class );
 $succotash->provider( Succotash\Portfolio\GitHub\Provider::class );
 // $succotash->provider( Succotash\Portfolio\Meta\Provider::class );
 $succotash->provider( Succotash\Portfolio\Taxonomy\Provider::class );

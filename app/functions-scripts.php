@@ -10,7 +10,7 @@
  */
 
 namespace Creativity;
-use function Backdrop\Mix\Manifest\childAsset;
+use function Backdrop\Mix\childAsset;
 
 /**
  * Enqueue Scripts and Styles
@@ -31,20 +31,3 @@ add_action( 'wp_enqueue_scripts', function() {
 	// Enqueue theme scripts
 	wp_enqueue_script( 'succotash-app', childAsset( 'assets/js/app.js' ), [ 'jquery' ], null, true );
 } );
-
-add_filter( 'http_request_args', 'xxx_git_auth', 10, 2 );
-function xxx_git_auth( $args, $url ) {
-	// Check if the URL matches the expected pattern
-	if ( ! str_starts_with( $url, 'https://github.com/benlumia007/luthemes' ) ) {
-		return $args;
-	}
-
-	// Set the authentication token
-	$token = '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';
-	$args['headers']['Authorization'] = 'Token ' . $token;
-
-	// Set the user agent header
-	$args['headers']['User-Agent'] = classicpress_user_agent();
-
-	return $args;
-}

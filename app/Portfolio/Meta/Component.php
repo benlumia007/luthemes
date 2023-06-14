@@ -20,29 +20,6 @@ class Component implements Bootable {
 
 		$slug = $post->post_name;
 
-		// Set transient base.
-		$transient_base = 'succotash_portfolio_theme_';
-
-		// Combine transient base and slug
-		$transient = $transient_base . $slug;
-
-		// Get the transient for them.
-		$theme = get_transient( $transient );
-
-		if ( ! $theme ) {
-
-			$uri = wp_remote_get( 'https://api.github.com/repos/benlumia007/' . $slug . '/releases' );
-
-				// Retrieve the body of the $uri.
-				$theme = wp_remote_retrieve_body( $uri );
-				$theme = json_decode( $theme );
-
-			// set the transient for 24 hours.
-			set_transient( $transient, $theme, 5 );
-		}
-
-		wp_nonce_field( basename( __FILE__ ), "backdrop_portfolio_nonce" );
-
 		$name    = get_post_meta( get_the_ID(), 'theme_name',    true );
 		$version = get_post_meta( get_the_ID(), 'theme_version', true );
 		$updated = get_post_meta( get_the_ID(), 'theme_updated', true );

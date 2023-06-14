@@ -156,50 +156,57 @@ class Component implements Bootable {
 			exit;
 		}
 
-		$releases_url = "https://api.github.com/repos/luthemes/$repository/releases/latest";
+		$transient_base = 'luthemes_portfolio_theme_';
 
-		$response = wp_remote_get( $releases_url, [
-			'headers' => [
-				'Authorization' => 'Bearer ' . $api_token,
-				'Accept' => 'application/vnd.github.v3+json'
-			]
-		] );
+		$transient = $transient_base . $repository;
 
-		if ( is_wp_error( $response ) ) {
-			echo '<div class="notice notice-error"><p>Error retrieving latest release from GitHub API for repository: ' . $repository . '</p></div>';
-			return;
+		$theme = get_transient( $transient );
+
+		if ( ! $theme ) {
+
+			$url = "https://api.github.com/repos/luthemes/$repository/releases/latest";
+
+			$theme = wp_remote_get( $url, [
+				'headers' => [
+					'Authorization' => 'Bearer ' . $api_token,
+					'Accept' => 'application/vnd.github.v3+json'
+				]
+			] );
+
+			$theme = json_decode( wp_remote_retrieve_body( $theme ), true );
+
+			set_transient( $transient, $theme, 60 );
 		}
 
-		$release = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		if ( empty( $release ) ) {
+
+		if ( empty( $theme ) ) {
 			echo '<div class="notice notice-info"><p>No releases found for repository: ' . $repository . '</p></div>';
 		} else {
 			$string = $repository;
 			$newString = str_replace( "-", " ", $string );
 			$name = ucwords( $newString);
-			$version = $release['tag_name'] ?? '';
-			$published = isset( $release['published_at'] ) ? date('F d, Y', strtotime( $release['published_at'] ) ) : '';
-			$download = ! empty($release['assets'][0]) ? '<button class="button button-primary"><a style="color: white;" href="' . $release['assets'][0]['browser_download_url'] . '">Download</a></button>' : '<button class="button button-primary">' . esc_html__( 'No Releases', 'succotash' ) . '</button>';
+			$version = $theme['tag_name'] ?? '';
+			$published = isset( $theme['published_at'] ) ? date('F d, Y', strtotime( $theme['published_at'] ) ) : '';
+			$download = ! empty( $theme['assets'][0] ) ? '<button class="button button-primary"><a style="color: white;" href="' . $theme['assets'][0]['browser_download_url'] . '">Download</a></button>' : '<button class="button button-primary">' . esc_html__( 'No Releases', 'succotash' ) . '</button>';
 
 			// Grab information from Theme's style.css
 			$cp       = '';
 			$wp       = '';
 			$php      = '';
-			$repo_url = '';
+			$repo = '';
 
-			if ( ! empty( $release['assets'] ) ) {
+			if ( ! empty( $theme['assets'] ) ) {
 
-				$latest = $release['assets'][0];
+				$latest = $theme['assets'][0];
 				$url = $latest['browser_download_url'];
 
-				$repo_url = "https://github.com/luthemes/$repository";
-
+				$repo = "https://github.com/luthemes/$repository";
 
 				# Enable the download_url() and wp_handle_sideload() functions
 				require_once( ABSPATH . 'wp-admin/includes/file.php' );
 
-				$temp = download_url( $url, 5 );
+				$temp = download_url( $url, 10 );
 
 				$file = [
 					'name'     => basename( $url ),
@@ -238,7 +245,7 @@ class Component implements Bootable {
 
 			echo '<h2 class="github" style="margin: 0.5rem 0; padding: 0;">' . $name . '</h2>';
 
-			if (  ! empty( $release['tag_name'] )  ) {
+			if (  ! empty( $theme['tag_name'] )  ) {
 				echo '<table class="theme-info widefat fixed striped">';
 				echo '<tbody>';
 				echo '<tr>';
