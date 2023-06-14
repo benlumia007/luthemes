@@ -28,7 +28,7 @@ $succotash = Backdrop\booted() ? Backdrop\app() : new Backdrop\Core\Application(
  * booting the application. These service providers form the foundation for the theme.
  */
 $succotash->provider( Backdrop\Mix\Provider::class );
-$succotash->provider( Succotash\Portfolio\test\Provider::class );
+$succotash->provider( Succotash\Portfolio\GitHub\Provider::class );
 // $succotash->provider( Succotash\Portfolio\Meta\Provider::class );
 $succotash->provider( Succotash\Portfolio\Taxonomy\Provider::class );
 // $succotash->provider( Succotash\Portfolio\Widget\Provider::class );
