@@ -18,9 +18,9 @@
     }
   },
   "require": {
-    "php": ">=7.0",
-    "benlumia007/backdrop": "^1.0",
-    "benlumia007/backdrop-mix-manifest": "^1.0",
+    "php": ">=7.1",
+    "backdrop-dev/framework": "^1.0",
+    "backdrop-dev/mix": "^1.0",
     "ext-zip": "*"
   }
 }
